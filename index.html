@@ -1,0 +1,2029 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#159765">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Gym Bros</title>
+
+<style>
+:root {
+ --p:#159765;
+ --pd:#08764c;
+ --bg:#f1faf5;
+ --soft:#e1f4e9;
+ --ink:#17382b;
+ --muted:#668074;
+ --line:#dcebe2;
+ --danger:#bd3445;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{
+ margin:0;
+ padding:0;
+ min-height:100vh;
+ min-height:100dvh;
+}
+body{
+ background:linear-gradient(135deg,#e5f6eb,#f6fbf7);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+ color:var(--ink);
+ display:flex;
+ justify-content:center;
+ -webkit-text-size-adjust:100%;
+}
+.app{
+ width:100%;
+ max-width:1000px;
+ background:var(--bg);
+ min-height:100vh;
+ min-height:100dvh;
+ display:flex;
+ flex-direction:column;
+ box-shadow:0 8px 30px #174b3020;
+ position:relative;
+}
+header{
+ background:linear-gradient(130deg,var(--p),var(--pd));
+ color:white;
+ padding:calc(14px + env(safe-area-inset-top)) 20px 14px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ position:sticky;
+ top:0;
+ z-index:3;
+ gap:10px;
+}
+header h1{font-size:1.25rem;margin:0;line-height:1.2}
+header small{opacity:.88;display:block}
+.header-right{
+ display:flex;
+ align-items:center;
+ gap:8px;
+ flex-wrap:wrap;
+ justify-content:flex-end;
+}
+.sync-pill{
+ display:inline-flex;
+ align-items:center;
+ gap:6px;
+ padding:5px 9px;
+ border-radius:999px;
+ font-size:.7rem;
+ font-weight:700;
+ background:rgba(255,255,255,.16);
+ color:#fff;
+ border:1px solid rgba(255,255,255,.28);
+ white-space:nowrap;
+}
+.sync-pill.offline{
+ background:rgba(255,247,223,.95);
+ color:#725915;
+ border-color:#f3d27a;
+}
+.sync-dot{
+ width:7px;
+ height:7px;
+ border-radius:50%;
+ background:#7dffb8;
+ box-shadow:0 0 6px #7dffb8;
+ flex-shrink:0;
+}
+.sync-pill.offline .sync-dot{
+ background:#c2820a;
+ box-shadow:none;
+}
+main{
+ padding:18px 20px;
+ flex:1;
+ overflow-y:auto;
+ -webkit-overflow-scrolling:touch;
+ padding-bottom:calc(104px + env(safe-area-inset-bottom));
+}
+nav{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ width:100%;
+ max-width:1000px;
+ display:grid;
+ grid-template-columns:repeat(5,1fr);
+ background:white;
+ border-top:1px solid var(--line);
+ padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+ z-index:5;
+}
+nav button{
+ border:0;
+ background:none;
+ color:var(--muted);
+ font-size:.7rem;
+ padding:6px 2px;
+ min-height:48px;
+ border-radius:10px;
+ cursor:pointer;
+ font-weight:600;
+ touch-action:manipulation;
+}
+nav button span{display:block;font-size:1.3rem;line-height:1.15}
+nav button.active{background:var(--soft);color:var(--pd)}
+.hidden{display:none!important}
+
+/* Diseño adaptativo para pantallas grandes (PC / Laptops) */
+@media(min-width:768px){
+ main {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  align-items: start;
+ }
+ main > .card.full-width,
+ main > .section-title {
+  grid-column: span 2;
+ }
+ nav {
+  border-radius: 0;
+  border-top: 1px solid var(--line);
+ }
+}
+
+@media(min-width:1024px){
+ main {
+  grid-template-columns: repeat(3, 1fr);
+ }
+ main > .card.full-width,
+ main > .section-title {
+  grid-column: span 3;
+ }
+}
+
+.card{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:16px;
+ padding:18px;
+ margin-bottom:16px;
+ box-shadow:0 4px 15px #174b3010;
+}
+.profile{text-align:center;padding:22px}
+.avatar{
+ width:62px;height:62px;border-radius:18px;
+ background:var(--soft);
+ display:grid;place-items:center;
+ font-size:2rem;flex-shrink:0;
+}
+.profile .avatar{
+ margin:0 auto 12px;
+ width:90px;height:90px;font-size:2.6rem;
+}
+h2{font-size:1.15rem;margin:0 0 6px}
+h3{font-size:1rem;margin:0 0 10px}
+.muted{color:var(--muted);font-size:.82rem;line-height:1.45}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{
+ background:#f5fbf7;border:1px solid var(--line);
+ border-radius:12px;padding:12px;min-width:0;
+}
+.stat strong{display:block;font-size:1.4rem;color:var(--pd)}
+.stat small{font-size:.72rem;color:var(--muted)}
+.btn{
+ width:100%;border:0;border-radius:11px;
+ padding:12px;margin-top:8px;min-height:44px;
+ background:var(--p);color:white;
+ font-weight:700;cursor:pointer;
+ font-size:.9rem;touch-action:manipulation;
+}
+.btn.secondary{background:var(--soft);color:var(--pd)}
+.btn.outline{background:white;color:var(--ink);border:1px solid var(--line)}
+.btn.small{width:auto;padding:7px 11px;min-height:36px;margin:0;font-size:.75rem}
+.btn.danger{background:#fff0f0;color:var(--danger)}
+input,select,textarea{
+ width:100%;padding:11px 12px;border:1px solid var(--line);
+ border-radius:10px;margin:5px 0 10px;font:inherit;
+ font-size:16px;
+ background:white;color:var(--ink);
+ -webkit-appearance:none;appearance:none;
+}
+select{
+ background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+ background-position:calc(100% - 16px) calc(50% - 2px),calc(100% - 11px) calc(50% - 2px);
+ background-size:5px 5px,5px 5px;
+ background-repeat:no-repeat;
+ padding-right:30px;
+}
+textarea{min-height:75px;resize:vertical}
+label{font-size:.82rem;font-weight:650;display:block}
+.tag{
+ display:inline-block;background:var(--soft);color:var(--pd);
+ border-radius:99px;padding:4px 10px;font-size:.7rem;margin:3px;
+}
+.notice{
+ padding:12px;border-radius:11px;background:#fff7df;
+ color:#725915;font-size:.78rem;line-height:1.4;margin-bottom:12px;
+ grid-column: span 1;
+}
+.item{padding:10px 0;border-bottom:1px solid var(--line)}
+.item:last-child{border:0}
+.bar{height:8px;background:#e8f1eb;border-radius:99px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--p)}
+.toast{
+ display:none;position:fixed;bottom:calc(88px + env(safe-area-inset-bottom));left:50%;
+ transform:translateX(-50%);background:#17382b;color:white;
+ padding:10px 18px;border-radius:10px;z-index:9;font-size:.85rem;
+ max-width:90%;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.2);
+}
+.section-title{margin:4px 2px 12px}
+.pill{
+ display:inline-block;padding:5px 10px;border-radius:20px;
+ background:var(--soft);color:var(--pd);font-size:.75rem;
+}
+.chart-container {
+ width: 100%;
+ overflow-x: auto;
+ padding: 4px 0;
+}
+.chip-group{
+ display:flex;
+ flex-wrap:wrap;
+ gap:6px;
+ margin:6px 0 10px;
+}
+.chip-btn{
+ border:1px solid var(--line);
+ background:#f5fbf7;
+ color:var(--ink);
+ border-radius:999px;
+ padding:7px 13px;min-height:36px;
+ font-size:.75rem;
+ font-weight:650;
+ cursor:pointer;
+ touch-action:manipulation;
+}
+.chip-btn.active{
+ background:var(--p);
+ color:#fff;
+ border-color:var(--p);
+}
+.pass-wrap{
+ position:relative;
+ display:flex;
+ align-items:center;
+}
+.pass-wrap input{
+ padding-right:44px;
+ margin:5px 0 10px;
+}
+.pass-toggle{
+ position:absolute;
+ right:6px;
+ top:6px;
+ height:38px;
+ width:36px;
+ border:0;
+ background:transparent;
+ color:var(--muted);
+ cursor:pointer;
+ font-size:1rem;
+ display:grid;
+ place-items:center;
+ border-radius:8px;
+ touch-action:manipulation;
+}
+.pass-toggle:hover{
+ background:var(--soft);
+ color:var(--pd);
+}
+.pr-grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+ gap:10px;
+ margin-top:8px;
+}
+.pr-card{
+ background:#f5fbf7;
+ border:1px solid var(--line);
+ border-radius:12px;
+ padding:11px;
+}
+.pr-card b{display:block;font-size:.9rem;margin-bottom:4px}
+.pr-card small{display:block;color:var(--muted);font-size:.75rem;line-height:1.4}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
+ outline:2px solid var(--p);outline-offset:2px;
+}
+@media(min-width:768px){
+ body{padding:20px}
+ .app{min-height:calc(100vh - 40px);min-height:calc(100dvh - 40px);border-radius:20px;overflow:hidden}
+ nav{border-radius:0 0 20px 20px;max-width:none;left:0;transform:none;width:100%}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+ <div>
+  <h1>💪 Gym Bros</h1>
+  <small>Entrena en comunidad</small>
+ </div>
+ <div class="header-right">
+  <span id="sync-badge" class="sync-pill offline" title="Estado de sincronización en la nube">
+   <span class="sync-dot"></span>
+   <span id="sync-label">Local</span>
+  </span>
+  <button type="button" class="btn small" onclick="go('account')">👤 Mi cuenta</button>
+ </div>
+</header>
+
+<main id="main"></main>
+
+<nav id="nav" aria-label="Navegación principal">
+ <button type="button" data-tab="home" onclick="go('home')"><span>⌂</span>Inicio</button>
+ <button type="button" data-tab="discover" onclick="go('discover')"><span>🤝</span>Conectar</button>
+ <button type="button" data-tab="progress" onclick="go('progress')"><span>📈</span>Progreso</button>
+ <button type="button" data-tab="ranking" onclick="go('ranking')"><span>🏆</span>Ranking</button>
+ <button type="button" data-tab="nutrition" onclick="go('nutrition')"><span>🥗</span>Nutrición</button>
+</nav>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+// Respaldo global para evitar pantallas en blanco ante fallos de red/módulos/almacenamiento
+window.__GB_BOOTED__ = false;
+window.__GB_MEMORY_STORAGE__ = {};
+
+window.__gbSafeStorageGet = function(k){
+ try{
+  if(window.localStorage) return window.localStorage.getItem(k);
+ }catch(e){}
+ return Object.prototype.hasOwnProperty.call(window.__GB_MEMORY_STORAGE__, k)
+  ? window.__GB_MEMORY_STORAGE__[k]
+  : null;
+};
+
+window.__gbSafeStorageSet = function(k, v){
+ try{
+  if(window.localStorage){
+   window.localStorage.setItem(k, v);
+   return true;
+  }
+ }catch(e){}
+ window.__GB_MEMORY_STORAGE__[k] = String(v);
+ return false;
+};
+
+window.__gbSafeStorageRemove = function(k){
+ try{
+  if(window.localStorage) window.localStorage.removeItem(k);
+ }catch(e){}
+ delete window.__GB_MEMORY_STORAGE__[k];
+};
+
+window.__gbRenderFallbackShell = function(reasonText){
+ try{
+  var mainEl = document.getElementById('main');
+  var navEl = document.getElementById('nav');
+  if(navEl) navEl.classList.add('hidden');
+  if(mainEl && (!mainEl.innerHTML || !mainEl.innerHTML.trim())){
+   mainEl.innerHTML =
+    '<div class="card full-width profile" style="max-width:520px;margin:32px auto;">' +
+     '<div class="avatar">💪</div>' +
+     '<h2>Gym Bros · Modo seguro</h2>' +
+     '<p class="muted">' + (reasonText || 'Cargando interfaz en modo local seguro...') + '</p>' +
+     '<button type="button" class="btn" onclick="location.reload()">Reintentar carga</button>' +
+    '</div>';
+  }
+ }catch(e){}
+};
+
+window.addEventListener('error', function(ev){
+ try{
+  console.warn('Error capturado en ventana:', ev && (ev.message || ev.error || ev));
+  if(!window.__GB_BOOTED__){
+   window.__gbRenderFallbackShell('Se detectó una restricción o error de red. Puedes reintentar o continuar en modo local.');
+  }
+ }catch(e){}
+});
+
+window.addEventListener('unhandledrejection', function(ev){
+ try{
+  console.warn('Promesa rechazada no controlada:', ev && ev.reason);
+  if(!window.__GB_BOOTED__){
+   window.__gbRenderFallbackShell('La conexión tardó o falló. Se ha habilitado el respaldo local seguro.');
+  }
+ }catch(e){}
+});
+
+setTimeout(function(){
+ if(!window.__GB_BOOTED__){
+  window.__gbRenderFallbackShell('El módulo tardó en responder; mostrando respaldo seguro.');
+ }
+}, 2500);
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+ getFirestore,
+ collection,
+ doc,
+ getDoc,
+ setDoc,
+ deleteDoc,
+ onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+ getAuth,
+ createUserWithEmailAndPassword,
+ signInWithEmailAndPassword,
+ signOut,
+ onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const KEY='gym_bros_full_v6';
+const ACTIVE_KEY='gym_bros_active';
+
+const firebaseConfig={
+ apiKey:"AIzaSyDjA-isaELcCkh81YGp8CdCuqa9qtkN_jQ",
+ authDomain:"gym-bros-bfd3d.firebaseapp.com",
+ projectId:"gym-bros-bfd3d",
+ storageBucket:"gym-bros-bfd3d.firebasestorage.app",
+ messagingSenderId:"206878572766",
+ appId:"1:206878572766:web:6c7674c99b852bdaedc24f"
+};
+
+const COLS={
+ users:'gym_bros_users',
+ workouts:'gym_bros_workouts',
+ foods:'gym_bros_foods',
+ likes:'gym_bros_likes'
+};
+
+let db;
+try{
+ db=JSON.parse(window.__gbSafeStorageGet(KEY)||'null');
+}catch(e){db=null}
+
+if(!db || typeof db !== 'object' || !Array.isArray(db.users)){
+ db={users:[],workouts:[],foods:[],likes:[],settings:{}};
+}
+
+db.users = Array.isArray(db.users) ? db.users : [];
+db.workouts = Array.isArray(db.workouts) ? db.workouts : [];
+db.foods = Array.isArray(db.foods) ? db.foods : [];
+db.likes = Array.isArray(db.likes) ? db.likes : [];
+db.settings = (db.settings && typeof db.settings === 'object') ? db.settings : {};
+
+let firestoreDb=null;
+let auth=null;
+let cloudReady=false;
+let syncingInProgress=false;
+let currentUserAuth=null;
+
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const $=id=>document.getElementById(id);
+
+function formatLocalDate(d){
+ const dt = d instanceof Date ? d : new Date();
+ const y = dt.getFullYear();
+ const m = String(dt.getMonth()+1).padStart(2,'0');
+ const day = String(dt.getDate()).padStart(2,'0');
+ return `${y}-${m}-${day}`;
+}
+
+const today=()=>formatLocalDate(new Date());
+
+function daysAgoDateStr(daysBack){
+ const d=new Date();
+ d.setDate(d.getDate()-daysBack);
+ return formatLocalDate(d);
+}
+
+function matchesTimeRange(dateStr, range){
+ if(!range || range==='all') return true;
+ if(!dateStr) return false;
+ const t=today();
+ if(range==='today') return dateStr===t;
+ if(range==='week'){
+  const minDate=daysAgoDateStr(6);
+  return dateStr>=minDate && dateStr<=t;
+ }
+ return true;
+}
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({
+ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+}[c]));
+
+function isFormInputFocused(){
+ const activeEl=document.activeElement;
+ return Boolean(activeEl && (
+  activeEl.tagName==='INPUT' ||
+  activeEl.tagName==='TEXTAREA' ||
+  activeEl.tagName==='SELECT'
+ ));
+}
+
+function updateSyncBadge(status,labelText){
+ const badge=$('sync-badge');
+ const label=$('sync-label');
+ if(!badge||!label)return;
+ label.textContent=labelText;
+ badge.classList.toggle('offline',status!=='online');
+ badge.title=status==='online'
+  ?'Sincronizado en tiempo real con Firebase Firestore (respaldo local activo)'
+  :'Sin conexión a la nube: usando caché local seguro';
+}
+
+function save(){
+ try{
+  window.__gbSafeStorageSet(KEY,JSON.stringify(db));
+ }catch(e){
+  console.warn('No se pudo guardar en almacenamiento local:',e);
+ }
+}
+
+function sanitizeCloudProfile(user){
+ if(!user)return null;
+ return {
+  id:user.id,
+  name:user.name||'Mi perfil',
+  email:user.email||'',
+  age:Number(user.age)||18,
+  level:user.level||'Principiante',
+  goal:user.goal||'Salud y bienestar',
+  schedule:user.schedule||'Variable',
+  gym:user.gym||'',
+  bio:user.bio||'',
+  avatar:user.avatar||'🏋️',
+  weeklyGoal:Number(user.weeklyGoal)||3
+ };
+}
+
+async function cloudSet(colName,id,payload,toastMsg=''){
+ if(!cloudReady||!firestoreDb||!id){
+  if(toastMsg) msg(`${toastMsg} (guardado localmente)`);
+  return false;
+ }
+ try{
+  updateSyncBadge('online','Sincronizando...');
+  await setDoc(doc(firestoreDb,colName,id),payload,{merge:true});
+  updateSyncBadge('online','Nube en vivo');
+  if(toastMsg) msg(`${toastMsg} · Local y nube`);
+  return true;
+ }catch(e){
+  console.error(`Error guardando en ${colName}/${id}:`,e);
+  updateSyncBadge('offline','Respaldo local');
+  if(toastMsg) msg(`${toastMsg} · Solo local (revisando nube)`);
+  return false;
+ }
+}
+
+async function cloudDelete(colName,id,toastMsg=''){
+ if(!cloudReady||!firestoreDb||!id){
+  if(toastMsg) msg(`${toastMsg} (eliminado localmente)`);
+  return false;
+ }
+ try{
+  updateSyncBadge('online','Sincronizando...');
+  await deleteDoc(doc(firestoreDb,colName,id));
+  updateSyncBadge('online','Nube en vivo');
+  if(toastMsg) msg(`${toastMsg} · Local y nube`);
+  return true;
+ }catch(e){
+  console.error(`Error eliminando en ${colName}/${id}:`,e);
+  updateSyncBadge('offline','Respaldo local');
+  if(toastMsg) msg(`${toastMsg} · Solo local`);
+  return false;
+ }
+}
+
+function msg(s){
+ const t=$('toast');
+ if(!t) return;
+ t.textContent=s;
+ t.style.display='block';
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>{ if($('toast')) $('toast').style.display='none'; },2600);
+}
+
+function getUser(id){
+ return db.users.find(u=>u.id===id);
+}
+
+function current(){
+ return getUser(meId);
+}
+
+let meId=window.__gbSafeStorageGet(ACTIVE_KEY);
+if(!getUser(meId)){
+ meId=null;
+ window.__gbSafeStorageRemove(ACTIVE_KEY);
+}
+
+let tab='home';
+
+function syncNavActive(t){
+ document.querySelectorAll('nav button').forEach(b=>{
+  b.classList.toggle('active',b.dataset.tab===t);
+ });
+}
+
+function go(t){
+ if(!current() && t !== 'account'){
+  tab = 'account';
+  render();
+  return;
+ }
+ tab=t;
+ if(t!=='progress'){
+  window.filterWorkoutSearch='';
+  window.filterWorkoutEx='';
+  window.filterWorkoutRange='all';
+ }
+ if(t!=='nutrition'){
+  window.filterFoodSearch='';
+  window.filterFoodMeal='';
+  window.filterFoodRange='all';
+ }
+ if(t!=='discover'){
+  window.filterConnGoal='';
+  window.filterConnSchedule='';
+ }
+
+ render();
+ syncNavActive(t);
+}
+
+function render(){
+ const activeUser = current();
+ const navEl = $('nav');
+
+ if(!activeUser){
+  if(navEl) navEl.classList.add('hidden');
+  account();
+  return;
+ } else {
+  if(navEl) navEl.classList.remove('hidden');
+ }
+
+ if(isFormInputFocused() && (tab === 'progress' || tab === 'nutrition' || tab === 'account')) {
+  syncNavActive(tab);
+  return;
+ }
+
+ ({
+  home,discover,progress,ranking,nutrition,account
+ }[tab]||home)();
+ syncNavActive(tab);
+}
+
+async function syncLocalDataToCloud(){
+ if(!cloudReady||!firestoreDb||syncingInProgress)return;
+ syncingInProgress=true;
+ try{
+  for(const u of db.users){
+   const safeUser=sanitizeCloudProfile(u);
+   if(safeUser)await setDoc(doc(firestoreDb,COLS.users,u.id),safeUser,{merge:true});
+  }
+  for(const w of db.workouts){
+   if(w.id)await setDoc(doc(firestoreDb,COLS.workouts,w.id),w,{merge:true});
+  }
+  for(const f of db.foods){
+   if(f.id)await setDoc(doc(firestoreDb,COLS.foods,f.id),f,{merge:true});
+  }
+  for(const l of db.likes){
+   if(l.id)await setDoc(doc(firestoreDb,COLS.likes,l.id),l,{merge:true});
+  }
+ }catch(e){
+  console.warn('Sincronización inicial parcial:',e);
+ }finally{
+  syncingInProgress=false;
+ }
+}
+
+function subscribeCloudCollections(){
+ if(!cloudReady||!firestoreDb)return;
+
+ try{
+  onSnapshot(collection(firestoreDb,COLS.users),(snap)=>{
+   const cloudUsers=snap.docs.map(d=>({id:d.id,...d.data()}));
+   const localById=new Map(db.users.map(u=>[u.id,u]));
+   const mergedUsers=cloudUsers.map(cu=>{
+    const localMatch=localById.get(cu.id);
+    return {
+     ...cu,
+     pass:localMatch?.pass||'',
+     weeklyGoal:cu.weeklyGoal??localMatch?.weeklyGoal??3
+    };
+   });
+   localById.forEach((lu,id)=>{
+    if(!mergedUsers.some(mu=>mu.id===id)){
+     mergedUsers.push(lu);
+    }
+   });
+   db.users=mergedUsers;
+   if(currentUserAuth && currentUserAuth.uid){
+    const matchedByUid=db.users.find(u=>u.id===currentUserAuth.uid)
+     || db.users.find(u=>(u.email||'').toLowerCase()===(currentUserAuth.email||'').toLowerCase());
+    if(matchedByUid && meId!==matchedByUid.id){
+     meId=matchedByUid.id;
+     window.__gbSafeStorageSet(ACTIVE_KEY,meId);
+    }
+   }
+   save();
+   if(!isFormInputFocused()) render();
+  },(err)=>{
+   console.error('Error escuchando usuarios:',err);
+   updateSyncBadge('offline','Respaldo local');
+  });
+
+  onSnapshot(collection(firestoreDb,COLS.workouts),(snap)=>{
+   db.workouts=snap.docs.map(d=>({id:d.id,...d.data()}));
+   save();
+   if(!isFormInputFocused()) render();
+  },(err)=>{console.error(err);});
+
+  onSnapshot(collection(firestoreDb,COLS.foods),(snap)=>{
+   db.foods=snap.docs.map(d=>({id:d.id,...d.data()}));
+   save();
+   if(!isFormInputFocused()) render();
+  },(err)=>{console.error(err);});
+
+  onSnapshot(collection(firestoreDb,COLS.likes),(snap)=>{
+   db.likes=snap.docs.map(d=>({id:d.id,...d.data()}));
+   save();
+   if(!isFormInputFocused()) render();
+  },(err)=>{console.error(err);});
+ }catch(e){
+  console.warn('No se pudieron iniciar listeners de Firestore:',e);
+  updateSyncBadge('offline','Respaldo local');
+ }
+}
+
+async function ensureLinkedUserProfile(fbUser, fallbackName='', extraFields={}){
+ const normEmail=(fbUser.email||'').trim().toLowerCase();
+ let profile=db.users.find(u=>u.id===fbUser.uid)
+  || db.users.find(u=>(u.email||'').trim().toLowerCase()===normEmail);
+
+ if(!profile && firestoreDb){
+  try{
+   const directSnap=await getDoc(doc(firestoreDb,COLS.users,fbUser.uid));
+   if(directSnap.exists()){
+    profile={id:directSnap.id,...directSnap.data()};
+   }
+  }catch(e){
+   console.warn('No se pudo leer perfil directo por UID:',e);
+  }
+ }
+
+ const defaultName=fallbackName
+  || fbUser.displayName
+  || (normEmail ? normEmail.split('@')[0] : 'Usuario');
+
+ if(!profile){
+  profile={
+   id:fbUser.uid,
+   name:defaultName,
+   email:normEmail,
+   age:Number(extraFields.age)||18,
+   level:extraFields.level||'Principiante',
+   goal:extraFields.goal||'Salud y bienestar',
+   schedule:extraFields.schedule||'Variable',
+   gym:extraFields.gym||'',
+   bio:extraFields.bio||'',
+   avatar:extraFields.avatar||'🏋️',
+   weeklyGoal:Number(extraFields.weeklyGoal)||3
+  };
+ } else {
+  profile={
+   ...profile,
+   id:fbUser.uid,
+   email:normEmail||profile.email||'',
+   name:extraFields.name||profile.name||defaultName,
+   age:extraFields.age!==undefined?Number(extraFields.age):(Number(profile.age)||18),
+   level:extraFields.level||profile.level||'Principiante',
+   goal:extraFields.goal||profile.goal||'Salud y bienestar',
+   schedule:extraFields.schedule||profile.schedule||'Variable',
+   weeklyGoal:extraFields.weeklyGoal!==undefined?Number(extraFields.weeklyGoal):(Number(profile.weeklyGoal)||3)
+  };
+ }
+
+ db.users=db.users.filter(u=>u.id!==profile.id && (u.email||'').toLowerCase()!==normEmail);
+ db.users.push(profile);
+ meId=profile.id;
+ window.__gbSafeStorageSet(ACTIVE_KEY,meId);
+ save();
+ await cloudSet(COLS.users,profile.id,sanitizeCloudProfile(profile));
+ return profile;
+}
+
+async function initCloud(){
+ updateSyncBadge('offline','Conectando...');
+ try{
+  const app=initializeApp(firebaseConfig);
+  firestoreDb=getFirestore(app);
+  auth=getAuth(app);
+  cloudReady=true;
+  updateSyncBadge('online','Nube en vivo');
+
+  onAuthStateChanged(auth, async (user) => {
+   try{
+    currentUserAuth = user;
+    if(user){
+     await ensureLinkedUserProfile(user);
+     if(tab==='account' && !current()){
+      go('home');
+     } else if(!isFormInputFocused()){
+      render();
+     }
+    }
+   }catch(e){
+    console.warn('Error en onAuthStateChanged:',e);
+   }
+  });
+
+  await syncLocalDataToCloud();
+  subscribeCloudCollections();
+ }catch(e){
+  console.error('Firebase Firestore no disponible:',e);
+  cloudReady=false;
+  updateSyncBadge('offline','Respaldo local');
+ }
+}
+
+window.addEventListener('online',()=>{
+ if(cloudReady)updateSyncBadge('online','Nube en vivo');
+ else initCloud();
+});
+
+window.addEventListener('offline',()=>{
+ updateSyncBadge('offline','Sin red (Local)');
+});
+
+function togglePassVisibility(inputId, btnId){
+ const inp=$(inputId);
+ const btn=$(btnId);
+ if(!inp) return;
+ const show=inp.type==='password';
+ inp.type=show?'text':'password';
+ if(btn){
+  btn.textContent=show?'🙈':'👁️';
+  btn.setAttribute('aria-label',show?'Ocultar contraseña':'Mostrar contraseña');
+ }
+}
+
+/* INICIO */
+
+function home(){
+ const me=current();
+ if(!me){ account(); return; }
+ const workouts=db.workouts.filter(w=>w.user===me.id);
+ const weekStartStr=daysAgoDateStr(6);
+ const tStr=today();
+ const weekly=workouts.filter(w=>w.date>=weekStartStr && w.date<=tStr).length;
+ const goal=me.weeklyGoal||3;
+ const goalPct=Math.min(100, Math.round((weekly/goal)*100));
+ const connections=db.likes.filter(l=>l.from===me.id&&l.mutual).length;
+
+ $('main').innerHTML=`
+ <div class="card">
+  <h2>¡Hola, ${esc(me.name)}! 👋</h2>
+  <p class="muted">Tu espacio para entrenar, mejorar y conectar.</p>
+  <span class="pill">${esc(me.level)}</span>
+  <span class="pill">${esc(me.goal)}</span>
+ </div>
+
+ <div class="card">
+  <h3>Meta semanal de entrenamientos</h3>
+  <div class="row between" style="margin-bottom:6px">
+   <span class="muted">Llevas ${weekly} de ${goal} sesiones esta semana</span>
+   <b>${goalPct}%</b>
+  </div>
+  <div class="bar"><i style="width:${goalPct}%"></i></div>
+ </div>
+
+ <div class="grid2">
+  <div class="stat"><strong>${workouts.length}</strong><small>Entrenamientos totales</small></div>
+  <div class="stat"><strong>${weekly}</strong><small>Últimos 7 días</small></div>
+  <div class="stat"><strong>${connections}</strong><small>Conexiones mutuas</small></div>
+  <div class="stat"><strong>${db.foods.filter(f=>f.user===me.id).length}</strong><small>Comidas registradas</small></div>
+ </div>
+
+ <div class="card">
+  <h3>Mi perfil</h3>
+  <div class="row">
+   <div class="avatar">${esc(me.avatar||'🏋️')}</div>
+   <div>
+    <b>${esc(me.name)}</b>
+    <p class="muted">${esc(me.schedule)} · ${esc(me.gym||'Gimnasio no indicado')}</p>
+   </div>
+  </div>
+  <button type="button" class="btn secondary" onclick="go('account')">Ver mi cuenta</button>
+ </div>
+
+ <div class="card">
+  <h3>Accesos rápidos</h3>
+  <button type="button" class="btn" onclick="go('discover')">🤝 Buscar compañero</button>
+  <button type="button" class="btn secondary" onclick="go('progress')">📈 Registrar entrenamiento</button>
+  <button type="button" class="btn secondary" onclick="go('nutrition')">🥗 Registrar comida</button>
+  <button type="button" class="btn outline" onclick="go('ranking')">🏆 Ver ranking</button>
+ </div>
+
+ <div class="notice full-width">
+  Protege tu privacidad: utiliza información general y no publiques direcciones exactas ni teléfonos.
+ </div>`;
+}
+
+/* CUENTA Y CONFIGURACIÓN */
+
+function account(){
+ const me=current();
+
+ if(!me){
+  $('main').innerHTML=`
+  <div class="card full-width profile" style="max-width:500px;margin:32px auto;">
+   <div class="avatar">💪</div>
+   <h2>Bienvenido a Gym Bros</h2>
+   <p class="muted" style="margin-bottom:20px;">Inicia sesión o crea una cuenta para registrar tus entrenamientos, conectar con compañeros y ver el ranking.</p>
+   <button type="button" class="btn" onclick="loginForm()">Iniciar sesión</button>
+   <button type="button" class="btn secondary" onclick="registerForm()" style="margin-top:10px;">Crear cuenta nueva</button>
+  </div>`;
+  return;
+ }
+
+ const authStatus = currentUserAuth ? `Autenticado en Firebase (${currentUserAuth.email})` : 'Sesión local (Sin Auth de Firebase activa)';
+
+ $('main').innerHTML=`
+ <div class="card profile">
+  <div class="avatar">${esc(me.avatar||'🏋️')}</div>
+  <h2>${esc(me.name)}</h2>
+  <p class="muted">${esc(me.email||'Perfil local')}</p>
+  <span class="tag">${esc(me.level)}</span>
+  <span class="tag">${esc(me.goal)}</span>
+  <button type="button" class="btn" onclick="editProfile()">Editar mi perfil</button>
+ </div>
+
+ <div class="card">
+  <h3>Mi cuenta (Multi-dispositivo)</h3>
+  <p class="muted">${authStatus}</p>
+  <button type="button" class="btn secondary" onclick="loginForm()">Iniciar sesión (Auth/Local)</button>
+  <button type="button" class="btn outline" onclick="registerForm()">Crear cuenta nueva (Auth/Cloud)</button>
+  <button type="button" class="btn outline" onclick="switchAccount()">Cambiar de perfil local</button>
+ </div>
+
+ <div class="card">
+  <h3>Respaldo y datos</h3>
+  <button type="button" class="btn secondary" onclick="exportData()">⬇️ Exportar respaldo JSON</button>
+  <button type="button" class="btn outline" onclick="importDataPrompt()">⬆️ Importar respaldo JSON</button>
+  <button type="button" class="btn outline" onclick="resetMyData()">Borrar mis registros</button>
+  <button type="button" class="btn danger" onclick="logoutCloud()">Cerrar sesión global / local</button>
+ </div>`;
+}
+
+function editProfile(){
+ const me=current();
+ if(!me) return;
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:600px;margin:auto;">
+  <h2>Editar perfil</h2>
+  <label>Nombre visible</label>
+  <input id="pname" maxlength="35" value="${esc(me.name)}">
+  <label>Emoji de perfil</label>
+  <select id="pavatar">
+   ${['🏋️','💪','🦾','🏃','🔥','⭐','⚡','🥇'].map(x=>
+    `<option ${me.avatar===x?'selected':''}>${x}</option>`).join('')}
+  </select>
+  <label>Edad</label>
+  <input id="page" type="number" min="13" max="99" value="${me.age||18}">
+  <label>Meta semanal de entrenamientos</label>
+  <input id="pweekly" type="number" min="1" max="14" value="${me.weeklyGoal||3}">
+  <label>Nivel de entrenamiento</label>
+  <select id="plevel">
+   ${['Principiante','Intermedio','Avanzado'].map(x=>
+    `<option ${me.level===x?'selected':''}>${x}</option>`).join('')}
+  </select>
+  <label>Objetivo general</label>
+  <select id="pgoal">
+   ${['Salud y bienestar','Fuerza','Hipertrofia','Resistencia','Aprender y mejorar'].map(x=>
+    `<option ${me.goal===x?'selected':''}>${x}</option>`).join('')}
+  </select>
+  <label>Horario</label>
+  <select id="pschedule">
+   ${['Mañanas','Tardes','Noches','Variable'].map(x=>
+    `<option ${me.schedule===x?'selected':''}>${x}</option>`).join('')}
+  </select>
+  <label>Gimnasio o zona general (opcional)</label>
+  <input id="pgym" maxlength="50" value="${esc(me.gym||'')}">
+  <label>Descripción</label>
+  <textarea id="pbio" maxlength="180">${esc(me.bio||'')}</textarea>
+  <button type="button" class="btn" onclick="saveProfile()">Guardar cambios</button>
+  <button type="button" class="btn outline" onclick="go('account')">Cancelar</button>
+ </div>`;
+}
+
+async function saveProfile(){
+ const me=current();
+ if(!me) return;
+ const age=+$('page').value;
+ const weekly=+$('pweekly').value;
+ if(age<13||age>99)return msg('Revisa la edad');
+ me.name=$('pname').value.trim()||'Usuario';
+ me.avatar=$('pavatar').value;
+ me.age=age;
+ me.weeklyGoal=weekly>=1?weekly:3;
+ me.level=$('plevel').value;
+ me.goal=$('pgoal').value;
+ me.schedule=$('pschedule').value;
+ me.gym=$('pgym').value.trim();
+ me.bio=$('pbio').value.trim();
+ save();
+ await cloudSet(COLS.users,me.id,sanitizeCloudProfile(me),'Perfil actualizado');
+ go('account');
+}
+
+function loginForm(){
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:500px;margin:auto;">
+  <h2>Iniciar sesión</h2>
+  <label>Correo</label>
+  <input id="lemail" type="email" placeholder="correo@ejemplo.com" autocomplete="email">
+  <label>Contraseña</label>
+  <div class="pass-wrap">
+   <input id="lpass" type="password" placeholder="Tu contraseña" autocomplete="current-password">
+   <button type="button" id="lpass-btn" class="pass-toggle" aria-label="Mostrar contraseña" onclick="togglePassVisibility('lpass','lpass-btn')">👁️</button>
+  </div>
+  <button type="button" class="btn" onclick="login()">Entrar</button>
+  <button type="button" class="btn outline" onclick="go('account')">Volver</button>
+ </div>`;
+}
+
+async function login(){
+ const email=$('lemail').value.trim().toLowerCase();
+ const pass=$('lpass').value;
+ if(!email||!pass)return msg('Completa todos los campos');
+
+ if(auth){
+  try{
+   const userCredential = await signInWithEmailAndPassword(auth, email, pass);
+   currentUserAuth = userCredential.user;
+   await ensureLinkedUserProfile(currentUserAuth);
+   go('home');
+   msg('Sesión iniciada · Local y nube');
+   return;
+  }catch(e){
+   console.warn('Auth Firebase falló, buscando perfil local:', e);
+   msg('Error de autenticación con Firebase. Verifica tus credenciales.');
+   return;
+  }
+ }
+
+ let u=db.users.find(x=>(x.email||'').toLowerCase()===email);
+ if(!u){
+  u={
+   id:uid(),name:email.split('@')[0],email,pass,
+   age:18,level:'Principiante',goal:'Salud y bienestar',
+   schedule:'Variable',gym:'',bio:'',avatar:'🏋️',weeklyGoal:3
+  };
+  db.users.push(u);
+ }
+ meId=u.id;
+ window.__gbSafeStorageSet(ACTIVE_KEY,meId);
+ save();
+ await cloudSet(COLS.users,u.id,sanitizeCloudProfile(u),'Sesión iniciada');
+ go('home');
+}
+
+function registerForm(){
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:500px;margin:auto;">
+  <h2>Crear cuenta</h2>
+  <label>Nombre</label>
+  <input id="rname" maxlength="35" placeholder="Tu nombre">
+  <label>Correo</label>
+  <input id="remail" type="email" placeholder="correo@ejemplo.com" autocomplete="email">
+  <label>Contraseña (mínimo 6 caracteres)</label>
+  <div class="pass-wrap">
+   <input id="rpass" type="password" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+   <button type="button" id="rpass-btn" class="pass-toggle" aria-label="Mostrar contraseña" onclick="togglePassVisibility('rpass','rpass-btn')">👁️</button>
+  </div>
+  <label>Edad</label>
+  <input id="rage" type="number" min="13" max="99" placeholder="18">
+  <label>Nivel</label>
+  <select id="rlevel"><option>Principiante</option><option>Intermedio</option><option>Avanzado</option></select>
+  <label>Objetivo</label>
+  <select id="rgoal">
+   <option>Salud y bienestar</option><option>Fuerza</option>
+   <option>Hipertrofia</option><option>Resistencia</option><option>Aprender y mejorar</option>
+  </select>
+  <label>Horario</label>
+  <select id="rschedule"><option>Mañanas</option><option>Tardes</option><option>Noches</option><option>Variable</option></select>
+  <button type="button" class="btn" onclick="register()">Crear cuenta</button>
+  <button type="button" class="btn outline" onclick="go('account')">Cancelar</button>
+ </div>`;
+}
+
+async function register(){
+ const name=$('rname').value.trim();
+ const email=$('remail').value.trim().toLowerCase();
+ const pass=$('rpass').value;
+ const age=+$('rage').value;
+ if(name.length<2||!email.includes('@')||pass.length<6||age<13||age>99)
+  return msg('Revisa los datos (contraseña mín. 6 caracteres)');
+
+ const extraFields={
+  name,
+  age,
+  weeklyGoal:3,
+  level:$('rlevel').value,
+  goal:$('rgoal').value,
+  schedule:$('rschedule').value
+ };
+
+ if(auth){
+  try{
+   const cred = await createUserWithEmailAndPassword(auth, email, pass);
+   currentUserAuth = cred.user;
+   await ensureLinkedUserProfile(currentUserAuth, name, extraFields);
+   go('home');
+   msg('Cuenta creada · Local y nube');
+   return;
+  }catch(e){
+   console.warn('Firebase Auth error:', e.message);
+   msg('No se pudo registrar en Firebase Auth: ' + (e.message || 'Error desconocido'));
+   return;
+  }
+ }
+
+ if(db.users.some(u=>(u.email||'').toLowerCase()===email))
+  return msg('Ese correo ya está registrado');
+
+ const u={
+  id:uid(),...extraFields,email,pass,gym:'',bio:'',avatar:'🏋️'
+ };
+ db.users.push(u);
+ meId=u.id;
+ window.__gbSafeStorageSet(ACTIVE_KEY,meId);
+ save();
+ await cloudSet(COLS.users,u.id,sanitizeCloudProfile(u),'Cuenta creada');
+ go('home');
+}
+
+function switchAccount(){
+ if(db.users.length<2)return msg('No hay otros perfiles guardados');
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:500px;margin:auto;">
+  <h2>Elegir perfil</h2>
+  ${db.users.map(u=>`
+   <div class="item row between">
+    <div><b>${esc(u.avatar||'🏋️')} ${esc(u.name)}</b>
+     <p class="muted">${esc(u.email||'Perfil local')}</p></div>
+    <button type="button" class="btn small" onclick="useAccount('${u.id}')">Entrar</button>
+   </div>`).join('')}
+ </div>`;
+}
+
+function useAccount(id){
+ if(!getUser(id))return;
+ meId=id;window.__gbSafeStorageSet(ACTIVE_KEY,id);
+ go('home');msg('Perfil cambiado');
+}
+
+async function logoutCloud(){
+ if(auth){
+  try{ await signOut(auth); }catch(e){}
+ }
+ currentUserAuth=null;
+ logout();
+}
+
+function logout(){
+ meId=null;
+ window.__gbSafeStorageRemove(ACTIVE_KEY);
+ save();
+ go('account');
+ msg('Sesión cerrada');
+}
+
+/* IMPORTAR / EXPORTAR JSON CON VALIDACIÓN ROBUSTA */
+
+function exportData(){
+ const me=current();
+ if(!me) return;
+ const safeMe=sanitizeCloudProfile(me);
+ const data={
+  profile:safeMe,
+  workouts:db.workouts.filter(w=>w.user===meId),
+  foods:db.foods.filter(f=>f.user===meId),
+  connections:db.likes.filter(l=>l.from===meId||l.to===meId)
+ };
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+ const url=URL.createObjectURL(blob);
+ const a=document.createElement('a');
+ a.href=url;
+ a.download='gym-bros-mis-datos.json';
+ a.click();
+ URL.revokeObjectURL(url);
+ msg('Exportación preparada · Respaldo JSON');
+}
+
+function importDataPrompt(){
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:500px;margin:auto;">
+  <h2>Importar Respaldo JSON</h2>
+  <p class="muted">Selecciona un archivo JSON válido exportado previamente para restaurar o fusionar tus registros.</p>
+  <input type="file" id="import-file" accept=".json,application/json">
+  <button type="button" class="btn" onclick="processImportFile()">Cargar e importar</button>
+  <button type="button" class="btn outline" onclick="go('account')">Cancelar</button>
+ </div>`;
+}
+
+async function processImportFile(){
+ const fileInput=$('import-file');
+ if(!fileInput || !fileInput.files || !fileInput.files.length)return msg('Selecciona un archivo JSON');
+ const file=fileInput.files[0];
+ const reader=new FileReader();
+ reader.onload=async function(e){
+  try{
+   const imported=JSON.parse(e.target.result);
+   if(!imported || typeof imported !== 'object'){
+    return msg('Formato JSON inválido');
+   }
+   const me=current();
+   if(!me) return msg('Inicia sesión para importar datos');
+   let importedWorkoutsCount=0;
+   let importedFoodsCount=0;
+
+   if(imported.workouts && Array.isArray(imported.workouts)){
+    for(const w of imported.workouts){
+     if(w && typeof w.ex === 'string' && w.date){
+      const cleanW={
+       id: w.id || uid(),
+       user: me.id,
+       ex: String(w.ex).trim(),
+       wt: Number(w.wt) || 0,
+       st: Number(w.st) || 1,
+       rp: Number(w.rp) || 1,
+       date: String(w.date),
+       nt: String(w.nt || '')
+      };
+      if(!db.workouts.some(existing=>existing.id===cleanW.id)){
+       db.workouts.push(cleanW);
+       await cloudSet(COLS.workouts,cleanW.id,cleanW);
+       importedWorkoutsCount++;
+      }
+     }
+    }
+   }
+
+   if(imported.foods && Array.isArray(imported.foods)){
+    for(const f of imported.foods){
+     if(f && typeof f.food === 'string' && f.date){
+      const cleanF={
+       id: f.id || uid(),
+       user: me.id,
+       food: String(f.food).trim(),
+       meal: String(f.meal || 'Comida'),
+       date: String(f.date),
+       comment: String(f.comment || '')
+      };
+      if(!db.foods.some(existing=>existing.id===cleanF.id)){
+       db.foods.push(cleanF);
+       await cloudSet(COLS.foods,cleanF.id,cleanF);
+       importedFoodsCount++;
+      }
+     }
+    }
+   }
+
+   save();
+   msg(`Importados: ${importedWorkoutsCount} entrenos, ${importedFoodsCount} comidas · Local y nube`);
+   go('home');
+  }catch(err){
+   console.error(err);
+   msg('Error al procesar el archivo JSON');
+  }
+ };
+ reader.readAsText(file);
+}
+
+async function resetMyData(){
+ const me=current();
+ if(!me) return;
+ if(!confirm('¿Borrar tus entrenamientos, comidas y conexiones?'))return;
+ const removedWorkouts=db.workouts.filter(w=>w.user===meId).map(w=>w.id);
+ const removedFoods=db.foods.filter(f=>f.user===meId).map(f=>f.id);
+ const removedLikes=db.likes.filter(l=>l.from===meId||l.to===meId).map(l=>l.id);
+
+ db.workouts=db.workouts.filter(w=>w.user!==meId);
+ db.foods=db.foods.filter(f=>f.user!==meId);
+ db.likes=db.likes.filter(l=>l.from!==meId&&l.to!==meId);
+ save();
+
+ for(const id of removedWorkouts) await cloudDelete(COLS.workouts,id);
+ for(const id of removedFoods) await cloudDelete(COLS.foods,id);
+ for(const id of removedLikes) await cloudDelete(COLS.likes,id);
+
+ go('home');
+ msg('Registros eliminados · Local y nube');
+}
+
+/* DESCUBRIR Y CONECTAR */
+
+window.filterConnGoal='';
+window.filterConnSchedule='';
+
+function discover(){
+ const me=current();
+ if(!me){ account(); return; }
+ const seen=db.likes.filter(l=>l.from===me.id).map(l=>l.to);
+
+ const goalFilter=window.filterConnGoal||'';
+ const scheduleFilter=window.filterConnSchedule||'';
+
+ const people=db.users.filter(u=>{
+  if(u.id===me.id||seen.includes(u.id))return false;
+  if(goalFilter && u.goal!==goalFilter)return false;
+  if(scheduleFilter && u.schedule!==scheduleFilter)return false;
+  return true;
+ });
+
+ $('main').innerHTML=`
+ <div class="section-title">
+  <h2>Conectar 🤝</h2>
+  <p class="muted">Encuentra compañeros según tus objetivos y horarios.</p>
+ </div>
+ <div class="card">
+  <button type="button" class="btn secondary" onclick="connections()" style="margin-top:0">💚 Ver mis conexiones mutuas</button>
+ </div>
+
+ <div class="card">
+  <h3>Filtrar perfiles</h3>
+  <div class="grid2">
+   <div>
+    <label>Objetivo</label>
+    <select id="filt-goal" onchange="applyConnFilters()">
+     <option value="">Cualquiera</option>
+     ${['Salud y bienestar','Fuerza','Hipertrofia','Resistencia','Aprender y mejorar'].map(x=>
+      `<option ${goalFilter===x?'selected':''}>${x}</option>`).join('')}
+    </select>
+   </div>
+   <div>
+    <label>Horario</label>
+    <select id="filt-schedule" onchange="applyConnFilters()">
+     <option value="">Cualquiera</option>
+     ${['Mañanas','Tardes','Noches','Variable'].map(x=>
+      `<option ${scheduleFilter===x?'selected':''}>${x}</option>`).join('')}
+    </select>
+   </div>
+  </div>
+  <button type="button" class="btn small outline" onclick="resetConnFilters()" style="margin-top:6px">Limpiar filtros</button>
+ </div>
+
+ <div id="discover-results-container" class="full-width" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(280px, 1fr));gap:16px;">
+  ${renderDiscoverList(people)}
+ </div>
+ <div class="notice full-width">Los perfiles se almacenan de forma segura en la comunidad. No hay verificación de identidad ni chat real.</div>`;
+}
+
+function renderDiscoverList(people){
+ if(!people.length) return `<div class="card profile full-width"><div class="avatar">🎉</div><h2>No hay perfiles con estos filtros</h2><p class="muted">Prueba cambiando los criterios de búsqueda.</p></div>`;
+ return people.map(u=>`
+  <div class="card profile" style="margin-bottom:0">
+   <div class="avatar">${esc(u.avatar||'🏋️')}</div>
+   <h2>${esc(u.name)}</h2>
+   <p class="muted">${esc(u.level)} · ${esc(u.schedule)}</p>
+   <span class="tag">${esc(u.goal)}</span>
+   <p class="muted">${esc(u.gym||'Gimnasio no indicado')}</p>
+   <p>${esc(u.bio||'Quiere compartir entrenamientos.')}</p>
+   <button type="button" class="btn" onclick="like('${u.id}')">💚 Me interesa</button>
+   <button type="button" class="btn outline" onclick="pass('${u.id}')">Pasar</button>
+  </div>`).join('');
+}
+
+function applyConnFilters(){
+ window.filterConnGoal=$('filt-goal')?.value||'';
+ window.filterConnSchedule=$('filt-schedule')?.value||'';
+ const me=current();
+ if(!me) return;
+ const seen=db.likes.filter(l=>l.from===me.id).map(l=>l.to);
+ const people=db.users.filter(u=>{
+  if(u.id===me.id||seen.includes(u.id))return false;
+  if(window.filterConnGoal && u.goal!==window.filterConnGoal)return false;
+  if(window.filterConnSchedule && u.schedule!==window.filterConnSchedule)return false;
+  return true;
+ });
+ const container=$('discover-results-container');
+ if(container) container.innerHTML = renderDiscoverList(people);
+}
+
+function resetConnFilters(){
+ window.filterConnGoal='';
+ window.filterConnSchedule='';
+ if($('filt-goal')) $('filt-goal').value='';
+ if($('filt-schedule')) $('filt-schedule').value='';
+ applyConnFilters();
+}
+
+async function pass(id){
+ const entry={id:uid(),from:meId,to:id,type:'pass',mutual:false};
+ db.likes.push(entry);
+ save();
+ await cloudSet(COLS.likes,entry.id,entry);
+ discover();
+}
+
+async function like(id){
+ const reciprocal=db.likes.find(l=>l.from===id&&l.to===meId&&l.type==='like');
+ const entry={id:uid(),from:meId,to:id,type:'like',mutual:!!reciprocal};
+ db.likes.push(entry);
+ if(reciprocal){
+  reciprocal.mutual=true;
+  await cloudSet(COLS.likes,reciprocal.id,reciprocal);
+ }
+ save();
+ await cloudSet(COLS.likes,entry.id,entry,reciprocal?'¡Conexión mutua confirmada!':'Interés guardado');
+ discover();
+}
+
+function connections(){
+ const me=current();
+ if(!me){ account(); return; }
+ const ids=db.likes.filter(l=>l.from===meId&&l.type==='like'&&l.mutual).map(l=>l.to);
+ const unique=[...new Set(ids)];
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:680px;margin:auto;">
+  <h2>Mis conexiones 💚</h2>
+  <p class="muted">Compañeros con interés mutuo y sus datos principales para coordinar.</p>
+  ${unique.length?unique.map(id=>{
+   const u=getUser(id);
+   if(!u)return '';
+   return `<div class="item row" style="align-items:flex-start">
+    <div class="avatar">${esc(u.avatar||'🏋️')}</div>
+    <div style="flex:1;min-width:0">
+     <b>${esc(u.name)}</b>
+     <div style="margin:4px 0">
+      <span class="tag">${esc(u.level||'Principiante')}</span>
+      <span class="tag">${esc(u.goal||'Salud y bienestar')}</span>
+     </div>
+     <p class="muted" style="margin:2px 0">🕒 Horario: <b>${esc(u.schedule||'Variable')}</b></p>
+     <p class="muted" style="margin:2px 0">📍 Gimnasio / zona: <b>${esc(u.gym||'No indicado')}</b></p>
+     ${u.bio?`<p class="muted" style="margin:4px 0 0">${esc(u.bio)}</p>`:''}
+    </div>
+   </div>`;
+  }).join(''):'<p class="muted">Todavía no tienes conexiones mutuas.</p>'}
+  <button type="button" class="btn outline" onclick="go('discover')" style="margin-top:15px">Volver a descubrir</button>
+ </div>`;
+}
+
+/* PROGRESO, PRs Y FILTRADO DOM DINÁMICO */
+
+window.filterWorkoutSearch='';
+window.filterWorkoutEx='';
+window.filterWorkoutRange='all';
+
+function computePersonalRecords(workouts){
+ const prMap=new Map();
+ for(const w of workouts){
+  const key=(w.ex||'').trim();
+  if(!key) continue;
+  const wt=Number(w.wt)||0;
+  const st=Number(w.st)||0;
+  const rp=Number(w.rp)||0;
+  const vol=wt*st*rp;
+  const prev=prMap.get(key)||{
+   exercise:key,
+   maxWeight:0,
+   maxWeightDate:'',
+   maxVolume:0,
+   maxVolumeDate:'',
+   maxVolumeDetail:''
+  };
+  if(wt>=prev.maxWeight){
+   prev.maxWeight=wt;
+   prev.maxWeightDate=w.date||'';
+  }
+  if(vol>=prev.maxVolume){
+   prev.maxVolume=vol;
+   prev.maxVolumeDate=w.date||'';
+   prev.maxVolumeDetail=`${wt} kg × ${st}×${rp}`;
+  }
+  prMap.set(key,prev);
+ }
+ return [...prMap.values()].sort((a,b)=>b.maxVolume-a.maxVolume || b.maxWeight-a.maxWeight);
+}
+
+function renderPersonalRecords(prs){
+ if(!prs.length){
+  return '<p class="muted">Registra entrenamientos con peso, series y repeticiones para calcular tus récords personales (PR).</p>';
+ }
+ return `<div class="pr-grid">
+  ${prs.map(pr=>`
+   <div class="pr-card">
+    <b>${esc(pr.exercise)}</b>
+    <small>🏋️ Mayor peso: <b>${pr.maxWeight} kg</b> ${pr.maxWeightDate?`(${esc(pr.maxWeightDate)})`:''}</small>
+    <small>⚡ Mayor volumen: <b>${Math.round(pr.maxVolume).toLocaleString('es-MX')} kg</b> ${pr.maxVolumeDetail?`[${esc(pr.maxVolumeDetail)}]`:''}</small>
+   </div>`).join('')}
+ </div>`;
+}
+
+function getFilteredWorkouts(allW){
+ const searchVal=(window.filterWorkoutSearch||'').toLowerCase();
+ const typeVal=window.filterWorkoutEx||'';
+ const rangeVal=window.filterWorkoutRange||'all';
+ return allW.filter(w=>{
+  if(!matchesTimeRange(w.date,rangeVal)) return false;
+  if(searchVal && !w.ex.toLowerCase().includes(searchVal) && !(w.nt||'').toLowerCase().includes(searchVal)) return false;
+  if(typeVal && w.ex!==typeVal) return false;
+  return true;
+ });
+}
+
+function progress(){
+ const me=current();
+ if(!me){ account(); return; }
+ const allW=db.workouts.filter(w=>w.user===me.id).sort((x,y)=>y.date.localeCompare(x.date));
+
+ const typeVal=window.filterWorkoutEx||'';
+ const rangeVal=window.filterWorkoutRange||'all';
+ const filteredW=getFilteredWorkouts(allW);
+ const prs=computePersonalRecords(allW);
+
+ const total=allW.length;
+ const volume=allW.reduce((s,w)=>s+(w.wt*w.st*w.rp),0);
+ const exercises=[...new Set(allW.map(w=>w.ex))];
+
+ const chartData = {};
+ allW.forEach(w=>{
+  chartData[w.date] = (chartData[w.date] || 0) + (w.wt * w.st * w.rp);
+ });
+ const sortedDates = Object.keys(chartData).sort().slice(-6);
+
+ let svgChart = '<p class="muted" style="text-align:center">Registra más días para ver tu evolución gráfica.</p>';
+ if(sortedDates.length >= 2){
+  const maxVol = Math.max(1, ...Object.values(chartData));
+  const hSvg = 120;
+  const pts = sortedDates.map((d, i)=>{
+   const x = 30 + (i * (260 / (sortedDates.length - 1 || 1)));
+   const y = hSvg - 20 - ((chartData[d] / maxVol) * 80);
+   return `${x},${y}`;
+  }).join(' ');
+
+  svgChart = `
+  <div class="chart-container">
+   <svg viewBox="0 0 320 130" width="100%" height="120">
+    <line x1="30" y1="100" x2="300" y2="100" stroke="#dcebe2" stroke-width="1"/>
+    <polyline fill="none" stroke="var(--p)" stroke-width="3" points="${pts}"/>
+    ${sortedDates.map((d, i)=>{
+     const x = 30 + (i * (260 / (sortedDates.length - 1 || 1)));
+     const y = hSvg - 20 - ((chartData[d] / maxVol) * 80);
+     return `<circle cx="${x}" cy="${y}" r="4" fill="var(--pd)"/><text x="${x}" y="120" font-size="9" fill="#668074" text-anchor="middle">${esc(d.slice(5))}</text>`;
+    }).join('')}
+   </svg>
+  </div>`;
+ }
+
+ $('main').innerHTML=`
+ <div class="card">
+  <h2>Mi progreso 📈</h2>
+  <p class="muted">Evolución de volumen y constancia.</p>
+  <div class="grid2" style="margin-top:10px">
+   <div class="stat"><strong>${total}</strong><small>Sesiones</small></div>
+   <div class="stat"><strong>${exercises.length}</strong><small>Ejercicios</small></div>
+  </div>
+  <div class="stat" style="margin-top:9px">
+   <strong>${Math.round(volume).toLocaleString('es-MX')}</strong>
+   <small>Volumen total acumulado (kg × series × reps)</small>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Evolución de Volumen</h3>
+  ${svgChart}
+ </div>
+
+ <div class="card">
+  <h3>Registrar entrenamiento</h3>
+  <label>Ejercicio</label>
+  <input id="ex" placeholder="Ej. Press de banca">
+  <div class="grid2">
+   <div><label>Peso (kg)</label><input id="wt" type="number" min="0" step=".5" value="0"></div>
+   <div><label>Series</label><input id="st" type="number" min="1" max="30" value="3"></div>
+   <div><label>Repeticiones</label><input id="rp" type="number" min="1" max="100" value="10"></div>
+   <div><label>Fecha</label><input id="dt" type="date" value="${today()}"></div>
+  </div>
+  <label>Notas</label>
+  <textarea id="nt" placeholder="Ej. Sensaciones, técnica..."></textarea>
+  <button type="button" class="btn" onclick="addWorkout()">Guardar entrenamiento</button>
+ </div>
+
+ <div class="card full-width">
+  <h3>Récords personales (PR) por ejercicio 🏅</h3>
+  <div id="pr-list-container">${renderPersonalRecords(prs)}</div>
+ </div>
+
+ <div class="card full-width">
+  <h3>Historial y filtros</h3>
+  <div class="chip-group" role="group" aria-label="Filtro rápido de tiempo">
+   <button type="button" class="chip-btn ${rangeVal==='all'?'active':''}" onclick="setWorkoutRange('all')">Todos</button>
+   <button type="button" class="chip-btn ${rangeVal==='today'?'active':''}" onclick="setWorkoutRange('today')">Hoy</button>
+   <button type="button" class="chip-btn ${rangeVal==='week'?'active':''}" onclick="setWorkoutRange('week')">Esta semana</button>
+  </div>
+  <div class="grid2">
+   <div>
+    <label>Buscar</label>
+    <input id="w-search" placeholder="Buscar ejercicio o nota..." value="${esc(window.filterWorkoutSearch||'')}" oninput="applyWorkoutFilters()">
+   </div>
+   <div>
+    <label>Filtrar ejercicio</label>
+    <select id="w-ex-filter" onchange="applyWorkoutFilters()">
+     <option value="">Todos</option>
+     ${exercises.map(ex=>`<option value="${esc(ex)}" ${typeVal===ex?'selected':''}>${esc(ex)}</option>`).join('')}
+    </select>
+   </div>
+  </div>
+  <button type="button" class="btn small outline" onclick="resetWorkoutFilters()" style="margin-top:6px">Limpiar filtros</button>
+
+  <div id="workout-list-container" style="margin-top:10px">
+   ${renderWorkoutList(filteredW)}
+  </div>
+ </div>`;
+}
+
+function renderWorkoutList(filteredW){
+ if(!filteredW.length) return '<p class="muted">No hay entrenamientos que coincidan.</p>';
+ return filteredW.map(w=>`
+  <div class="item">
+   <div class="row between">
+    <b>${esc(w.ex)}</b>
+    <div>
+     <button type="button" class="btn small outline" onclick="editWorkoutPrompt('${w.id}')">Editar</button>
+     <button type="button" class="btn small danger" onclick="delWorkout('${w.id}')">X</button>
+    </div>
+   </div>
+   <p class="muted">${esc(w.date)} · ${w.wt} kg · ${w.st} series × ${w.rp} reps · Vol: ${Math.round((w.wt||0)*(w.st||0)*(w.rp||0)).toLocaleString('es-MX')} kg</p>
+   <p class="muted">${esc(w.nt)}</p>
+  </div>`).join('');
+}
+
+function setWorkoutRange(range){
+ window.filterWorkoutRange=range;
+ applyWorkoutFilters();
+}
+
+function applyWorkoutFilters(){
+ window.filterWorkoutSearch=$('w-search')?.value||'';
+ window.filterWorkoutEx=$('w-ex-filter')?.value||'';
+ const rangeVal=window.filterWorkoutRange||'all';
+ document.querySelectorAll('.chip-group .chip-btn').forEach(btn=>{
+  const txt=btn.textContent.trim();
+  const matches=(rangeVal==='all'&&txt==='Todos')||(rangeVal==='today'&&txt==='Hoy')||(rangeVal==='week'&&txt==='Esta semana');
+  btn.classList.toggle('active',matches);
+ });
+ const me=current();
+ if(!me) return;
+ const allW=db.workouts.filter(w=>w.user===me.id).sort((x,y)=>y.date.localeCompare(x.date));
+ const filteredW=getFilteredWorkouts(allW);
+ const container=$('workout-list-container');
+ if(container) container.innerHTML = renderWorkoutList(filteredW);
+}
+
+function resetWorkoutFilters(){
+ window.filterWorkoutSearch='';
+ window.filterWorkoutEx='';
+ window.filterWorkoutRange='all';
+ if($('w-search')) $('w-search').value='';
+ if($('w-ex-filter')) $('w-ex-filter').value='';
+ applyWorkoutFilters();
+}
+
+async function addWorkout(){
+ const me=current();
+ if(!me) return;
+ const ex=$('ex').value.trim();
+ const wt=+$('wt').value,st=+$('st').value,rp=+$('rp').value,dt=$('dt').value;
+ if(!ex||!Number.isFinite(wt)||wt<0||!Number.isInteger(st)||st<1||!Number.isInteger(rp)||rp<1||!dt)
+  return msg('Completa correctamente los campos');
+ const item={id:uid(),user:meId,ex,wt,st,rp,date:dt,nt:$('nt').value.trim()};
+ db.workouts.push(item);
+ save();
+ await cloudSet(COLS.workouts,item.id,item,'Entrenamiento guardado');
+ progress();
+}
+
+function editWorkoutPrompt(id){
+ const me=current();
+ if(!me) return;
+ const w=db.workouts.find(x=>x.id===id && x.user===meId);
+ if(!w)return;
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:600px;margin:auto;">
+  <h2>Editar entrenamiento</h2>
+  <label>Ejercicio</label>
+  <input id="edit-ex" value="${esc(w.ex)}">
+  <div class="grid2">
+   <div><label>Peso (kg)</label><input id="edit-wt" type="number" min="0" step=".5" value="${w.wt}"></div>
+   <div><label>Series</label><input id="edit-st" type="number" min="1" max="30" value="${w.st}"></div>
+   <div><label>Repeticiones</label><input id="edit-rp" type="number" min="1" max="100" value="${w.rp}"></div>
+   <div><label>Fecha</label><input id="edit-dt" type="date" value="${w.date}"></div>
+  </div>
+  <label>Notas</label>
+  <textarea id="edit-nt">${esc(w.nt)}</textarea>
+  <button type="button" class="btn" onclick="saveEditedWorkout('${w.id}')">Guardar cambios</button>
+  <button type="button" class="btn outline" onclick="go('progress')">Cancelar</button>
+ </div>`;
+}
+
+async function saveEditedWorkout(id){
+ const me=current();
+ if(!me) return;
+ const w=db.workouts.find(x=>x.id===id && x.user===meId);
+ if(!w)return;
+ const ex=$('edit-ex').value.trim();
+ const wt=+$('edit-wt').value,st=+$('edit-st').value,rp=+$('edit-rp').value,dt=$('edit-dt').value;
+ if(!ex||!Number.isFinite(wt)||wt<0||!Number.isInteger(st)||st<1||!Number.isInteger(rp)||rp<1||!dt)
+  return msg('Completa correctamente los campos');
+ w.ex=ex; w.wt=wt; w.st=st; w.rp=rp; w.date=dt; w.nt=$('edit-nt').value.trim();
+ save();
+ await cloudSet(COLS.workouts,w.id,w,'Entrenamiento actualizado');
+ progress();
+}
+
+async function delWorkout(id){
+ const me=current();
+ if(!me) return;
+ if(!confirm('¿Quieres eliminar este entrenamiento?'))return;
+ db.workouts=db.workouts.filter(w=>w.id!==id||w.user!==meId);
+ save();
+ await cloudDelete(COLS.workouts,id,'Entrenamiento eliminado');
+ progress();
+}
+
+/* RANKING */
+
+function ranking(){
+ const me=current();
+ if(!me){ account(); return; }
+ const scores=db.users.map(u=>{
+  const uWorkouts=db.workouts.filter(w=>w.user===u.id);
+  const totalVol=uWorkouts.reduce((s,w)=>s+(w.wt*w.st*w.rp),0);
+  const daysActive=new Set(uWorkouts.map(w=>w.date)).size;
+  return {
+   id:u.id,name:u.name,avatar:u.avatar||'🏋️',
+   count:uWorkouts.length,
+   volume:totalVol,
+   constancy:daysActive
+  };
+ }).sort((a,b)=>b.count-a.count || b.volume-a.volume);
+
+ const max=Math.max(1,...scores.map(x=>x.count));
+
+ $('main').innerHTML=`
+ <div class="card full-width">
+  <h2>Ranking de comunidad 🏆</h2>
+  <p class="muted">Clasificación por constancia, volumen y sesiones totales de los usuarios registrados.</p>
+ </div>
+ <div class="card full-width">
+  ${scores.map((x,i)=>`
+   <div class="item row">
+    <b>${['🥇','🥈','🥉'][i]||'⭐'}</b>
+    <div style="flex:1;min-width:0">
+     <b>${esc(x.avatar)} ${esc(x.name)} ${x.id===meId?'(tú)':''}</b>
+     <div class="bar"><i style="width:${100*x.count/max}%"></i></div>
+     <small class="muted">${x.count} sesiones · ${Math.round(x.volume).toLocaleString('es-MX')} kg vol.</small>
+    </div>
+   </div>`).join('')}
+ </div>`;
+}
+
+/* NUTRICIÓN Y FILTRADO DOM DINÁMICO */
+
+window.filterFoodSearch='';
+window.filterFoodMeal='';
+window.filterFoodRange='all';
+
+function getFilteredFoods(allF){
+ const searchVal=(window.filterFoodSearch||'').toLowerCase();
+ const mealVal=window.filterFoodMeal||'';
+ const rangeVal=window.filterFoodRange||'all';
+ return allF.filter(f=>{
+  if(!matchesTimeRange(f.date,rangeVal)) return false;
+  if(searchVal && !f.food.toLowerCase().includes(searchVal) && !(f.comment||'').toLowerCase().includes(searchVal)) return false;
+  if(mealVal && f.meal!==mealVal) return false;
+  return true;
+ });
+}
+
+function nutrition(){
+ const me=current();
+ if(!me){ account(); return; }
+ const allF=db.foods.filter(f=>f.user===me.id).sort((x,y)=>y.date.localeCompare(x.date));
+
+ const mealVal=window.filterFoodMeal||'';
+ const rangeVal=window.filterFoodRange||'all';
+ const a=getFilteredFoods(allF);
+
+ const counts={Desayuno:0,Comida:0,Cena:0,Colación:0,Otra:0};
+ allF.forEach(f=>{if(counts[f.meal]!==undefined)counts[f.meal]++;else counts.Otra++;});
+ const totalF=allF.length||1;
+
+ $('main').innerHTML=`
+ <div class="card">
+  <h2>Diario de alimentación 🥗</h2>
+  <p class="muted">Registros y distribución por tipo de comida.</p>
+  <div class="grid2" style="margin-top:10px">
+   <div class="stat"><strong>${allF.length}</strong><small>Registros totales</small></div>
+   <div class="stat"><strong>${[...new Set(allF.map(f=>f.date))].length}</strong><small>Días registrados</small></div>
+  </div>
+ </div>
+
+ <div class="card">
+  <h3>Desglose por tipo de comida</h3>
+  ${Object.entries(counts).map(([k,v])=>`
+   <div style="margin-bottom:8px">
+    <div class="row between"><small><b>${k}</b></small><small>${v} registros</small></div>
+    <div class="bar"><i style="width:${Math.round((v/totalF)*100)}%"></i></div>
+   </div>`).join('')}
+ </div>
+
+ <div class="card">
+  <h3>Agregar comida</h3>
+  <label>Comida o alimento</label>
+  <input id="food" placeholder="Ej. arroz, pollo y verduras">
+  <label>Tipo de comida</label>
+  <select id="meal">
+   <option>Desayuno</option><option>Comida</option>
+   <option>Cena</option><option>Colación</option><option>Otra</option>
+  </select>
+  <label>Fecha</label>
+  <input id="fd" type="date" value="${today()}">
+  <label>Comentario opcional</label>
+  <textarea id="fc" placeholder="Notas sobre la comida"></textarea>
+  <button type="button" class="btn" onclick="addFood()">Guardar comida</button>
+ </div>
+
+ <div class="card full-width">
+  <h3>Mis registros y filtros</h3>
+  <div class="chip-group" role="group" aria-label="Filtro rápido de tiempo en nutrición">
+   <button type="button" class="chip-btn ${rangeVal==='all'?'active':''}" onclick="setFoodRange('all')">Todos</button>
+   <button type="button" class="chip-btn ${rangeVal==='today'?'active':''}" onclick="setFoodRange('today')">Hoy</button>
+   <button type="button" class="chip-btn ${rangeVal==='week'?'active':''}" onclick="setFoodRange('week')">Esta semana</button>
+  </div>
+  <div class="grid2">
+   <div>
+    <label>Buscar</label>
+    <input id="f-search" placeholder="Buscar alimento o nota..." value="${esc(window.filterFoodSearch||'')}" oninput="applyFoodFilters()">
+   </div>
+   <div>
+    <label>Filtrar tipo</label>
+    <select id="f-meal-filter" onchange="applyFoodFilters()">
+     <option value="">Todos</option>
+     ${['Desayuno','Comida','Cena','Colación','Otra'].map(m=>`<option value="${m}" ${mealVal===m?'selected':''}>${m}</option>`).join('')}
+    </select>
+   </div>
+  </div>
+  <button type="button" class="btn small outline" onclick="resetFoodFilters()" style="margin-top:6px">Limpiar filtros</button>
+
+  <div id="food-list-container" style="margin-top:10px">
+   ${renderFoodList(a)}
+  </div>
+ </div>`;
+}
+
+function renderFoodList(a){
+ if(!a.length) return '<p class="muted">No hay registros de alimentación que coincidan.</p>';
+ return a.map(f=>`
+  <div class="item">
+   <div class="row between">
+    <div style="min-width:0">
+     <b>${esc(f.food)}</b>
+     <p class="muted">${esc(f.meal||'Comida')} · ${esc(f.date)}</p>
+     <p class="muted">${esc(f.comment)}</p>
+    </div>
+    <div>
+     <button type="button" class="btn small outline" onclick="editFoodPrompt('${f.id}')">Editar</button>
+     <button type="button" class="btn small danger" onclick="delFood('${f.id}')">X</button>
+    </div>
+   </div>
+  </div>`).join('');
+}
+
+function setFoodRange(range){
+ window.filterFoodRange=range;
+ applyFoodFilters();
+}
+
+function applyFoodFilters(){
+ window.filterFoodSearch=$('f-search')?.value||'';
+ window.filterFoodMeal=$('f-meal-filter')?.value||'';
+ const rangeVal=window.filterFoodRange||'all';
+ document.querySelectorAll('.chip-group .chip-btn').forEach(btn=>{
+  const txt=btn.textContent.trim();
+  const matches=(rangeVal==='all'&&txt==='Todos')||(rangeVal==='today'&&txt==='Hoy')||(rangeVal==='week'&&txt==='Esta semana');
+  btn.classList.toggle('active',matches);
+ });
+ const me=current();
+ if(!me) return;
+ const allF=db.foods.filter(f=>f.user===me.id).sort((x,y)=>y.date.localeCompare(x.date));
+ const a=getFilteredFoods(allF);
+ const container=$('food-list-container');
+ if(container) container.innerHTML = renderFoodList(a);
+}
+
+function resetFoodFilters(){
+ window.filterFoodSearch='';
+ window.filterFoodMeal='';
+ window.filterFoodRange='all';
+ if($('f-search')) $('f-search').value='';
+ if($('f-meal-filter')) $('f-meal-filter').value='';
+ applyFoodFilters();
+}
+
+async function addFood(){
+ const me=current();
+ if(!me) return;
+ const food=$('food').value.trim(),date=$('fd').value;
+ if(!food||!date)return msg('Escribe el alimento y la fecha');
+ const item={id:uid(),user:meId,food,meal:$('meal').value,date,comment:$('fc').value.trim()};
+ db.foods.push(item);
+ save();
+ await cloudSet(COLS.foods,item.id,item,'Comida guardada');
+ nutrition();
+}
+
+function editFoodPrompt(id){
+ const me=current();
+ if(!me) return;
+ const f=db.foods.find(x=>x.id===id && x.user===meId);
+ if(!f)return;
+ $('main').innerHTML=`
+ <div class="card full-width" style="max-width:600px;margin:auto;">
+  <h2>Editar comida</h2>
+  <label>Alimento</label>
+  <input id="edit-food" value="${esc(f.food)}">
+  <label>Tipo de comida</label>
+  <select id="edit-meal">
+   ${['Desayuno','Comida','Cena','Colación','Otra'].map(m=>`<option ${f.meal===m?'selected':''}>${m}</option>`).join('')}
+  </select>
+  <label>Fecha</label>
+  <input id="edit-fd" type="date" value="${f.date}">
+  <label>Comentario</label>
+  <textarea id="edit-fc">${esc(f.comment)}</textarea>
+  <button type="button" class="btn" onclick="saveEditedFood('${f.id}')">Guardar cambios</button>
+  <button type="button" class="btn outline" onclick="go('nutrition')">Cancelar</button>
+ </div>`;
+}
+
+async function saveEditedFood(id){
+ const me=current();
+ if(!me) return;
+ const f=db.foods.find(x=>x.id===id && x.user===meId);
+ if(!f)return;
+ const food=$('edit-food').value.trim(),date=$('edit-fd').value;
+ if(!food||!date)return msg('Completa correctamente los campos');
+ f.food=food; f.meal=$('edit-meal').value; f.date=date; f.comment=$('edit-fc').value.trim();
+ save();
+ await cloudSet(COLS.foods,f.id,f,'Comida actualizada');
+ nutrition();
+}
+
+async function delFood(id){
+ const me=current();
+ if(!me) return;
+ if(!confirm('¿Eliminar este registro?'))return;
+ db.foods=db.foods.filter(f=>f.id!==id||f.user!==meId);
+ save();
+ await cloudDelete(COLS.foods,id,'Comida eliminada');
+ nutrition();
+}
+
+Object.assign(window,{
+ go,editProfile,saveProfile,loginForm,login,registerForm,register,
+ switchAccount,useAccount,logout,logoutCloud,pass,like,connections,
+ addWorkout,delWorkout,editWorkoutPrompt,saveEditedWorkout,
+ applyWorkoutFilters,resetWorkoutFilters,setWorkoutRange,
+ addFood,delFood,editFoodPrompt,saveEditedFood,
+ applyFoodFilters,resetFoodFilters,setFoodRange,
+ exportData,importDataPrompt,processImportFile,resetMyData,
+ applyConnFilters,resetConnFilters,togglePassVisibility
+});
+
+save();
+if(!meId){
+ go('account');
+} else {
+ go('home');
+}
+window.__GB_BOOTED__ = true;
+initCloud();
+</script>
+</body>
+</html>
